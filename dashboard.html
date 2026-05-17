@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Places Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f4f1ed;
+      --surface: #ffffff;
+      --surface2: #f9f7f5;
+      --border: #e8e2da;
+      --text: #1c1917;
+      --text-muted: #78716c;
+      --accent: #d97706;
+      --accent-light: #fef3c7;
+      --accent-hover: #b45309;
+      --green: #16a34a;
+      --green-light: #dcfce7;
+      --red: #dc2626;
+      --red-light: #fef2f2;
+      --header-from: #1c1917;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ─────────────────────────────────────── */
+    .site-header {
+      background: linear-gradient(135deg, var(--header-from) 0%, #3b2f2a 100%);
+      color: #fff;
+      padding: 36px 40px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .site-header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .header-inner {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .header-title { display: flex; align-items: center; gap: 14px; }
+
+    .header-icon {
+      width: 48px; height: 48px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      border: 1px solid rgba(255,255,255,0.15);
+      flex-shrink: 0;
+    }
+
+    .header-title h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.1; }
+    .header-title p  { font-size: 13px; color: rgba(255,255,255,0.55); margin-top: 3px; }
+
+    .header-stats { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start; }
+
+    .stat-card {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 12px 18px;
+      text-align: center;
+      min-width: 80px;
+    }
+
+    .stat-card .num { font-size: 24px; font-weight: 700; line-height: 1; color: #fff; }
+    .stat-card .lbl { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .progress-bar-wrap {
+      position: relative;
+      margin-top: 20px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 99px;
+      height: 6px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .progress-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 6px; text-align: right; }
+
+    /* ── CONTROLS ────────────────────────────────────── */
+    .controls-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 40px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 340px; }
+
+    .search-wrap svg {
+      position: absolute; left: 11px; top: 50%;
+      transform: translateY(-50%); color: var(--text-muted); pointer-events: none;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      padding: 9px 12px 9px 34px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      background: var(--surface2);
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+      color: var(--text);
+    }
+
+    .search-wrap input:focus { border-color: var(--accent); background: #fff; }
+
+    .styled-select {
+      padding: 9px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      background: var(--surface2);
+      cursor: pointer;
+      outline: none;
+      color: var(--text);
+      transition: border-color 0.15s;
+    }
+
+    .styled-select:focus { border-color: var(--accent); }
+
+    .toggle-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      padding: 7px 12px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--surface2);
+      transition: all 0.15s;
+    }
+
+    .toggle-pill:has(input:checked) { border-color: var(--accent); background: var(--accent-light); color: var(--accent-hover); }
+    .toggle-pill input { display: none; }
+
+    .toggle-pill .pip {
+      width: 16px; height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .toggle-pill:has(input:checked) .pip { background: var(--accent); border-color: var(--accent); }
+    .toggle-pill:has(input:checked) .pip::after { content: "✓"; font-size: 10px; color: #fff; font-weight: 700; }
+
+    .spacer { flex: 1; }
+
+    .btn {
+      padding: 9px 18px;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn-ghost { background: transparent; color: var(--text-muted); border: 1.5px solid var(--border); }
+    .btn-ghost:hover { background: var(--surface2); color: var(--red); border-color: var(--red); }
+    .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 2px 8px rgba(217,119,6,0.3); }
+    .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 4px 12px rgba(217,119,6,0.4); transform: translateY(-1px); }
+    .btn-danger { background: var(--red); color: #fff; }
+    .btn-danger:hover { background: #b91c1c; transform: translateY(-1px); }
+
+    /* ── TABLE ───────────────────────────────────────── */
+    .table-wrapper { padding: 28px 40px 40px; overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--surface);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      font-size: 13px;
+    }
+
+    thead tr { background: var(--surface2); border-bottom: 2px solid var(--border); }
+
+    th {
+      padding: 13px 16px;
+      text-align: left;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      border-bottom: 2px solid var(--border);
+      transition: color 0.15s;
+    }
+
+    th:hover { color: var(--accent); }
+    th.sorted-asc::after  { content: " ↑"; color: var(--accent); }
+    th.sorted-desc::after { content: " ↓"; color: var(--accent); }
+    th.no-sort { cursor: default; }
+    th.no-sort:hover { color: var(--text-muted); }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      transition: background 0.1s;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #faf8f5; }
+    .row-visited td { background: #f0fdf4 !important; }
+    .row-visited:hover td { background: #dcfce7 !important; }
+
+    /* Visited checkbox */
+    .visited-cell { text-align: center; }
+
+    .custom-check {
+      appearance: none; -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+      display: inline-block;
+    }
+
+    .custom-check:checked { background: var(--green); border-color: var(--green); }
+    .custom-check:checked::after {
+      content: "✓";
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 12px; font-weight: 700;
+    }
+    .custom-check:hover:not(:checked) { border-color: var(--green); }
+
+    /* Column styles */
+    .place-col   { max-width: 150px; font-weight: 600; color: var(--text); }
+    .label-col   { max-width: 150px; font-weight: 500; color: #44403c; }
+    .address-col { max-width: 160px; color: var(--text-muted); font-size: 12px; }
+    .summary-col { max-width: 240px; color: #57534e; line-height: 1.5; font-size: 12.5px; }
+    .date-col    { color: var(--text-muted); white-space: nowrap; font-size: 12px; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .maps-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 5px 10px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff; border-radius: 8px; font-size: 11px; font-weight: 600;
+      text-decoration: none; white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(217,119,6,0.25);
+      transition: all 0.15s;
+    }
+
+    .maps-btn:hover { background: linear-gradient(135deg, #d97706, #b45309); transform: translateY(-1px); }
+
+    .link-cell a { color: var(--accent); text-decoration: none; font-weight: 500; font-size: 12px; }
+    .link-cell a:hover { text-decoration: underline; }
+
+    /* ── ACTION BUTTONS ──────────────────────────────── */
+    .actions-cell { text-align: center; white-space: nowrap; }
+
+    .action-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px;
+      border: none; border-radius: 7px; cursor: pointer;
+      transition: all 0.15s; background: transparent;
+      color: var(--text-muted);
+    }
+
+    .action-btn:hover { transform: scale(1.1); }
+    .action-btn.edit:hover  { background: var(--accent-light); color: var(--accent-hover); }
+    .action-btn.delete:hover { background: var(--red-light); color: var(--red); }
+
+    /* ── EMPTY STATE ─────────────────────────────────── */
+    .empty-state { text-align: center; padding: 72px 20px; color: var(--text-muted); }
+    .empty-state p { font-size: 15px; margin-top: 10px; }
+
+    /* ── EDIT MODAL ──────────────────────────────────── */
+    dialog {
+      border: none;
+      border-radius: 18px;
+      padding: 0;
+      width: min(560px, 95vw);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
+      background: var(--surface);
+    }
+
+    dialog::backdrop {
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(3px);
+    }
+
+    .modal-header {
+      padding: 22px 24px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .modal-header h2 { font-size: 17px; font-weight: 700; }
+
+    .modal-close {
+      width: 30px; height: 30px;
+      border: none; border-radius: 8px; background: var(--surface2);
+      cursor: pointer; font-size: 18px; color: var(--text-muted);
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .modal-close:hover { background: var(--border); color: var(--text); }
+
+    .modal-body { padding: 20px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .field-group { display: flex; flex-direction: column; gap: 5px; }
+    .field-group.full { grid-column: 1 / -1; }
+
+    .field-group label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+
+    .field-group input,
+    .field-group textarea,
+    .field-group select {
+      padding: 9px 11px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-size: 13px;
+      font-family: inherit;
+      background: var(--surface2);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .field-group input:focus,
+    .field-group textarea:focus,
+    .field-group select:focus { border-color: var(--accent); background: #fff; }
+
+    .field-group textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: flex-end; gap: 10px;
+    }
+
+    @media (max-width: 700px) {
+      .site-header { padding: 24px 20px 20px; }
+      .controls-bar, .table-wrapper { padding-left: 16px; padding-right: 16px; }
+      .modal-body { grid-template-columns: 1fr; }
+      .field-group.full { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-title">
+      <div class="header-icon">🗺️</div>
+      <div>
+        <h1>Places Dashboard</h1>
+        <p>Your saved spots &amp; places to explore</p>
+      </div>
+    </div>
+    <div class="header-stats">
+      <div class="stat-card"><div class="num" id="total-count">0</div><div class="lbl">Total</div></div>
+      <div class="stat-card"><div class="num" id="visited-count">0</div><div class="lbl">Visited</div></div>
+      <div class="stat-card"><div class="num" id="remaining-count">0</div><div class="lbl">To Go</div></div>
+    </div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+  <div class="progress-label" id="progress-label">0% explored</div>
+</header>
+
+<!-- CONTROLS -->
+<div class="controls-bar">
+  <div class="search-wrap">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="search" placeholder="Search places, labels, summaries…" />
+  </div>
+  <select class="styled-select" id="category-filter">
+    <option value="">All categories</option>
+  </select>
+  <label class="toggle-pill"><input type="checkbox" id="hide-visited" /><span class="pip"></span>Hide visited</label>
+  <label class="toggle-pill"><input type="checkbox" id="only-places" /><span class="pip"></span>Places only</label>
+  <div class="spacer"></div>
+  <button class="btn btn-ghost" id="clear-visited">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+    Clear visited
+  </button>
+  <button class="btn btn-primary" id="export-csv">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Export CSV
+  </button>
+</div>
+
+<!-- TABLE -->
+<div class="table-wrapper">
+  <table id="places-table">
+    <thead>
+      <tr>
+        <th data-col="visited" style="width:52px">Done</th>
+        <th data-col="place_name">Place</th>
+        <th data-col="label">Label</th>
+        <th data-col="category">Category</th>
+        <th data-col="place_address">Address</th>
+        <th data-col="summary">Summary</th>
+        <th data-col="maps_url" style="width:76px">Map</th>
+        <th data-col="url">Source</th>
+        <th data-col="saved_at">Saved</th>
+        <th class="no-sort" style="width:72px">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+  <div id="empty-state" class="empty-state" style="display:none">
+    <div style="font-size:40px">🔍</div>
+    <p>No matching entries found.</p>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<dialog id="edit-dialog">
+  <div class="modal-header">
+    <h2>Edit Record</h2>
+    <button class="modal-close" id="modal-close">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="field-group">
+      <label>Place Name</label>
+      <input type="text" id="f-place_name" placeholder="e.g. Geneo Science Park" />
+    </div>
+    <div class="field-group">
+      <label>Label</label>
+      <input type="text" id="f-label" placeholder="e.g. Pet-Friendly Cafe" />
+    </div>
+    <div class="field-group">
+      <label>Category</label>
+      <input type="text" id="f-category" list="category-suggestions" placeholder="e.g. Pet Friendly Restaurant" />
+      <datalist id="category-suggestions"></datalist>
+    </div>
+    <div class="field-group">
+      <label>Address</label>
+      <input type="text" id="f-place_address" placeholder="e.g. Serene Centre, Singapore" />
+    </div>
+    <div class="field-group full">
+      <label>Maps URL</label>
+      <input type="text" id="f-maps_url" placeholder="https://maps.google.com/…" />
+    </div>
+    <div class="field-group full">
+      <label>Summary</label>
+      <textarea id="f-summary"></textarea>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-ghost" id="modal-cancel">Cancel</button>
+    <button class="btn btn-primary" id="modal-save">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Save Changes
+    </button>
+  </div>
+</dialog>
+
+<script>
+  async function init(RAW_DATA) {
+
+  // ── Platform detection ────────────────────────────────
+  function getPlatform(url) {
+    try {
+      const h = new URL(url).hostname.replace("www.", "");
+      if (h.includes("tiktok.com"))    return { name: "TikTok",      icon: "♪",  bg: "#1a1a1a", color: "#fff" };
+      if (h.includes("instagram.com")) return { name: "Instagram",   icon: "◈",  bg: "#e1306c", color: "#fff" };
+      if (h.includes("google.com") || h.includes("goo.gl") || h.includes("maps.app"))
+                                        return { name: "Google Maps", icon: "📍", bg: "#1a73e8", color: "#fff" };
+      if (h.includes("facebook.com"))  return { name: "Facebook",    icon: "f",  bg: "#1877f2", color: "#fff" };
+      if (h.includes("youtube.com") || h.includes("youtu.be"))
+                                        return { name: "YouTube",     icon: "▶",  bg: "#ff0000", color: "#fff" };
+      return { name: h, icon: "🔗", bg: "#e5e7eb", color: "#374151" };
+    } catch { return { name: "Link", icon: "🔗", bg: "#e5e7eb", color: "#374151" }; }
+  }
+
+  function extractMapsPlace(url) {
+    try {
+      const q = new URL(url).searchParams.get("q");
+      if (!q) return { place_name: "", place_address: "" };
+      const parts = q.split(/\s+-\s+/);
+      return { place_name: parts[0].trim(), place_address: parts.slice(1).join(", ").trim() };
+    } catch { return { place_name: "", place_address: "" }; }
+  }
+
+  function isGoogleMapsUrl(url) {
+    try { const h = new URL(url).hostname; return h.includes("google.com") || h.includes("goo.gl") || h.includes("maps.app"); }
+    catch { return false; }
+  }
+
+  // ── Storage keys ──────────────────────────────────────
+  const KEY_VISITED = "places_visited_v1";
+  const KEY_DELETED = "places_deleted_v1";
+  const KEY_EDITS   = "places_edits_v1";
+
+  function loadVisited() { try { return new Set(JSON.parse(localStorage.getItem(KEY_VISITED)) || []); } catch { return new Set(); } }
+  function saveVisited(s) { localStorage.setItem(KEY_VISITED, JSON.stringify([...s])); }
+
+  function loadDeleted() { try { return new Set(JSON.parse(localStorage.getItem(KEY_DELETED)) || []); } catch { return new Set(); } }
+  function saveDeleted(s) { localStorage.setItem(KEY_DELETED, JSON.stringify([...s])); }
+
+  function loadEdits() { try { return JSON.parse(localStorage.getItem(KEY_EDITS)) || {}; } catch { return {}; } }
+  function saveEdits(m) { localStorage.setItem(KEY_EDITS, JSON.stringify(m)); }
+
+  let visited = loadVisited();
+  let deleted = loadDeleted();
+  let edits   = loadEdits();
+
+  // ── Build allRows (base data + auto-enrich) ───────────
+  const seen = new Set();
+  let baseRows = [];
+  for (const entries of Object.values(RAW_DATA)) {
+    for (const e of entries) {
+      if (!seen.has(e.url)) {
+        seen.add(e.url);
+        let row = { ...e, label: e.label || "", place_name: e.place_name || "", place_address: e.place_address || "", maps_url: e.maps_url || "" };
+        if (isGoogleMapsUrl(row.url)) {
+          if (!row.maps_url) row.maps_url = row.url;
+          if (!row.place_name) {
+            const ex = extractMapsPlace(row.url);
+            if (ex.place_name) { row.place_name = ex.place_name; if (!row.place_address) row.place_address = ex.place_address; }
+          }
+        }
+        baseRows.push(row);
+      }
+    }
+  }
+
+  function buildAllRows() {
+    return baseRows
+      .filter(r => !deleted.has(r.url))
+      .map(r => edits[r.url] ? { ...r, ...edits[r.url] } : r);
+  }
+
+  let allRows = buildAllRows();
+
+  // ── Category dropdown ─────────────────────────────────
+  function refreshCategoryDropdown() {
+    const cats = [...new Set(allRows.map(r => r.category).filter(Boolean))].sort();
+    const current = catSelect.value;
+    catSelect.innerHTML = '<option value="">All categories</option>';
+    cats.forEach(c => { const o = document.createElement("option"); o.value = c; o.textContent = c; catSelect.appendChild(o); });
+    if (cats.includes(current)) catSelect.value = current;
+    // datalist for edit modal
+    const dl = document.getElementById("category-suggestions");
+    dl.innerHTML = "";
+    cats.forEach(c => { const o = document.createElement("option"); o.value = c; dl.appendChild(o); });
+  }
+
+  const catSelect = document.getElementById("category-filter");
+  refreshCategoryDropdown();
+
+  // ── Badge palette ─────────────────────────────────────
+  const paletteBg  = ["#e0f2fe","#fef9c3","#fce7f3","#dcfce7","#ede9fe","#ffe4e6","#ffedd5","#ecfdf5","#fef2f2"];
+  const paletteTxt = ["#0369a1","#854d0e","#9d174d","#166534","#6b21a8","#9f1239","#c2410c","#065f46","#991b1b"];
+  const catColors  = {};
+  function getCatColor(cat) {
+    if (!catColors[cat]) {
+      const i = Object.keys(catColors).length;
+      catColors[cat] = { bg: paletteBg[i % paletteBg.length], color: paletteTxt[i % paletteTxt.length] };
+    }
+    return catColors[cat];
+  }
+  allRows.forEach(r => r.category && getCatColor(r.category));
+
+  function formatDate(iso) {
+    if (!iso) return "";
+    return new Date(iso).toLocaleDateString("en-SG", { day: "2-digit", month: "short", year: "numeric" });
+  }
+
+  function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+  let sortCol = "saved_at", sortDir = -1;
+
+  function getFiltered() {
+    const q     = document.getElementById("search").value.trim().toLowerCase();
+    const cat   = catSelect.value;
+    const hideV = document.getElementById("hide-visited").checked;
+    const onlyP = document.getElementById("only-places").checked;
+    return allRows.filter(r => {
+      if (cat   && r.category !== cat)           return false;
+      if (hideV && visited.has(r.url))           return false;
+      if (onlyP && !r.place_name)                return false;
+      if (q && !([r.label, r.place_name, r.place_address, r.summary, r.category].join(" ").toLowerCase().includes(q))) return false;
+      return true;
+    });
+  }
+
+  function getSorted(rows) {
+    return [...rows].sort((a, b) => {
+      if (sortCol === "visited") return (visited.has(b.url) ? 1 : 0) - (visited.has(a.url) ? 1 : 0);
+      const av = (a[sortCol] || "").toString().toLowerCase();
+      const bv = (b[sortCol] || "").toString().toLowerCase();
+      return av < bv ? -sortDir : av > bv ? sortDir : 0;
+    });
+  }
+
+  // ── RENDER ────────────────────────────────────────────
+  function render() {
+    const rows  = getSorted(getFiltered());
+    const tbody = document.getElementById("table-body");
+    const empty = document.getElementById("empty-state");
+
+    const visitedCount = [...visited].filter(u => allRows.find(r => r.url === u)).length;
+    const total = allRows.length;
+    const pct   = total ? Math.round(visitedCount / total * 100) : 0;
+
+    document.getElementById("visited-count").textContent   = visitedCount;
+    document.getElementById("total-count").textContent     = total;
+    document.getElementById("remaining-count").textContent = total - visitedCount;
+    document.getElementById("progress-fill").style.width   = pct + "%";
+    document.getElementById("progress-label").textContent  = pct + "% explored";
+
+    if (!rows.length) { tbody.innerHTML = ""; empty.style.display = ""; return; }
+    empty.style.display = "none";
+
+    tbody.innerHTML = rows.map(r => {
+      const isV     = visited.has(r.url);
+      const cat     = r.category || "";
+      const cc      = getCatColor(cat) || { bg: "#f3f4f6", color: "#374151" };
+      const platform = getPlatform(r.url);
+      const isEdited = !!edits[r.url];
+
+      return `<tr class="${isV ? "row-visited" : ""}">
+        <td class="visited-cell">
+          <input class="custom-check" type="checkbox" data-url="${esc(r.url)}" ${isV ? "checked" : ""} />
+        </td>
+        <td class="place-col">${esc(r.place_name || "—")}</td>
+        <td class="label-col">${esc(r.label || "—")}${isEdited ? ' <span title="Edited" style="font-size:9px;color:var(--accent);vertical-align:super">✎</span>' : ""}</td>
+        <td><span class="badge" style="background:${cc.bg};color:${cc.color}">${esc(cat)}</span></td>
+        <td class="address-col">${esc(r.place_address || "—")}</td>
+        <td class="summary-col">${esc(r.summary)}</td>
+        <td>${r.maps_url ? `<a class="maps-btn" href="${esc(r.maps_url)}" target="_blank" rel="noopener">📍 Map</a>` : '<span style="color:#c7c4bc">—</span>'}</td>
+        <td class="link-cell">
+          <a href="${esc(r.url)}" target="_blank" rel="noopener"
+             style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:600;text-decoration:none;background:${esc(platform.bg)};color:${esc(platform.color)}">
+            ${esc(platform.icon)} ${esc(platform.name)}
+          </a>
+        </td>
+        <td class="date-col">${formatDate(r.saved_at)}</td>
+        <td class="actions-cell">
+          <button class="action-btn edit" data-url="${esc(r.url)}" title="Edit record">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="action-btn delete" data-url="${esc(r.url)}" title="Delete record">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+          </button>
+        </td>
+      </tr>`;
+    }).join("");
+
+    // Visited checkbox
+    tbody.querySelectorAll("input.custom-check").forEach(cb => {
+      cb.addEventListener("change", e => {
+        const url = e.target.dataset.url;
+        if (e.target.checked) visited.add(url); else visited.delete(url);
+        saveVisited(visited);
+        render();
+      });
+    });
+
+    // Edit button
+    tbody.querySelectorAll(".action-btn.edit").forEach(btn => {
+      btn.addEventListener("click", () => openEditModal(btn.dataset.url));
+    });
+
+    // Delete button
+    tbody.querySelectorAll(".action-btn.delete").forEach(btn => {
+      btn.addEventListener("click", () => deleteRow(btn.dataset.url));
+    });
+
+    // Sort indicators
+    document.querySelectorAll("th[data-col]").forEach(th => {
+      th.classList.remove("sorted-asc","sorted-desc");
+      if (th.dataset.col === sortCol) th.classList.add(sortDir === 1 ? "sorted-asc" : "sorted-desc");
+    });
+  }
+
+  // ── DELETE ────────────────────────────────────────────
+  function deleteRow(url) {
+    const row = allRows.find(r => r.url === url);
+    const name = row?.place_name || row?.label || "this record";
+    if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+    deleted.add(url);
+    saveDeleted(deleted);
+    visited.delete(url);
+    saveVisited(visited);
+    allRows = buildAllRows();
+    render();
+  }
+
+  // ── EDIT MODAL ────────────────────────────────────────
+  const dialog      = document.getElementById("edit-dialog");
+  let editingUrl    = null;
+
+  function openEditModal(url) {
+    const row = allRows.find(r => r.url === url);
+    if (!row) return;
+    editingUrl = url;
+    document.getElementById("f-place_name").value   = row.place_name   || "";
+    document.getElementById("f-label").value        = row.label        || "";
+    document.getElementById("f-category").value     = row.category     || "";
+    document.getElementById("f-place_address").value= row.place_address|| "";
+    document.getElementById("f-maps_url").value     = row.maps_url     || "";
+    document.getElementById("f-summary").value      = row.summary      || "";
+    dialog.showModal();
+  }
+
+  function closeModal() { dialog.close(); editingUrl = null; }
+
+  document.getElementById("modal-close").addEventListener("click", closeModal);
+  document.getElementById("modal-cancel").addEventListener("click", closeModal);
+  dialog.addEventListener("click", e => { if (e.target === dialog) closeModal(); });
+
+  document.getElementById("modal-save").addEventListener("click", () => {
+    if (!editingUrl) return;
+    const patch = {
+      place_name:    document.getElementById("f-place_name").value.trim(),
+      label:         document.getElementById("f-label").value.trim(),
+      category:      document.getElementById("f-category").value.trim(),
+      place_address: document.getElementById("f-place_address").value.trim(),
+      maps_url:      document.getElementById("f-maps_url").value.trim(),
+      summary:       document.getElementById("f-summary").value.trim(),
+    };
+    edits[editingUrl] = patch;
+    saveEdits(edits);
+    allRows = buildAllRows();
+    refreshCategoryDropdown();
+    closeModal();
+    render();
+  });
+
+  // ── SORT ──────────────────────────────────────────────
+  document.querySelectorAll("th[data-col]").forEach(th => {
+    th.addEventListener("click", () => {
+      if (sortCol === th.dataset.col) sortDir *= -1; else { sortCol = th.dataset.col; sortDir = 1; }
+      render();
+    });
+  });
+
+  // ── FILTERS ───────────────────────────────────────────
+  ["search","category-filter","hide-visited","only-places"].forEach(id => {
+    document.getElementById(id).addEventListener("input", render);
+    document.getElementById(id).addEventListener("change", render);
+  });
+
+  document.getElementById("clear-visited").addEventListener("click", () => {
+    if (confirm("Clear all visited marks?")) { visited.clear(); saveVisited(visited); render(); }
+  });
+
+  // ── EXPORT CSV ────────────────────────────────────────
+  document.getElementById("export-csv").addEventListener("click", () => {
+    const rows = getSorted(getFiltered());
+    const headers = ["Visited","Place","Label","Category","Address","Summary","Maps URL","Source URL","Saved At"];
+    const q = v => `"${String(v || "").replace(/"/g,'""')}"`;
+    const lines = [
+      headers.map(q).join(","),
+      ...rows.map(r => [
+        visited.has(r.url) ? "Yes" : "No",
+        r.place_name, r.label, r.category, r.place_address,
+        r.summary, r.maps_url, r.url, r.saved_at
+      ].map(q).join(","))
+    ];
+    const blob = new Blob([lines.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "places_export.csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  render();
+  } // end init
+
+  fetch('links_data.json')
+    .then(r => r.json())
+    .then(init)
+    .catch(() => {
+      document.getElementById('table-body').innerHTML =
+        `<tr><td colspan="10" style="text-align:center;padding:48px;color:#dc2626;font-size:14px">
+          ⚠️ Could not load <code>links_data.json</code>.<br><br>
+          Open the dashboard via the local server instead of double-clicking the file:<br><br>
+          <code style="background:#f3f4f6;padding:6px 12px;border-radius:6px">python serve.py</code><br><br>
+          Then open <strong>http://localhost:8080</strong> in your browser.
+        </td></tr>`;
+    });
+</script>
+</body>
+</html>

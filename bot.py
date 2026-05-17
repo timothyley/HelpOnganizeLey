@@ -3,7 +3,7 @@ Telegram Link Organiser Bot
 Powered by Claude API
 
 Setup:
-  pip install python-telegram-bot anthropic requests beautifulsoup4
+  pip install python-telegram-bot anthropic requests beautifulsoup4 python-dotenv
 
 Set these environment variables:
   TELEGRAM_TOKEN  - from @BotFather
@@ -15,6 +15,8 @@ import json
 import re
 import urllib.parse
 import requests
+from dotenv import load_dotenv
+load_dotenv()
 from bs4 import BeautifulSoup
 from anthropic import Anthropic
 from telegram import Update

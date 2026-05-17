@@ -5,6 +5,8 @@ Supports place_name, place_address, maps_url fields for social media links.
 
 import json
 import os
+import base64
+import requests
 from datetime import datetime
 
 DATA_FILE = "links_data.json"
@@ -18,6 +20,28 @@ def _load() -> dict:
 def _save(data: dict):
     with open(DATA_FILE, "w") as f:
         json.dump(data, f, indent=2)
+    _sync_to_github()
+
+def _sync_to_github():
+    """Push links_data.json to GitHub so the hosted dashboard stays current."""
+    token = os.environ.get("GITHUB_TOKEN", "")
+    repo  = os.environ.get("GITHUB_REPO", "")
+    if not token or not repo:
+        return
+    try:
+        api_url = f"https://api.github.com/repos/{repo}/contents/{DATA_FILE}"
+        headers = {"Authorization": f"token {token}"}
+        with open(DATA_FILE, "rb") as f:
+            encoded = base64.b64encode(f.read()).decode()
+        # Fetch current SHA (required for updates)
+        r = requests.get(api_url, headers=headers, timeout=10)
+        sha = r.json().get("sha") if r.status_code == 200 else None
+        payload = {"message": "sync: update links_data.json", "content": encoded}
+        if sha:
+            payload["sha"] = sha
+        requests.put(api_url, json=payload, headers=headers, timeout=10)
+    except Exception:
+        pass  # Never let a sync failure break the bot
 
 def save_link(
     chat_id: str,
