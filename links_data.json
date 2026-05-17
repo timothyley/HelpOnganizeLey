@@ -175,6 +175,16 @@
       "place_address": "Singapore",
       "maps_url": "https://maps.google.com/?q=Merle%20%26%20Co%20Singapore",
       "saved_at": "2026-05-17T11:20:36.941648"
+    },
+    {
+      "url": "https://www.instagram.com/reel/DQ3mIT4ko--/?igsh=a2J6eWwwcHdzcnh0",
+      "category": "Cafe",
+      "summary": "An Instagram reel reviewing unique coffee drinks at Cheerful Goat, a specialty coffee bar at Stamford Arts Centre, Singapore.",
+      "label": "Cafe in Waterloo St",
+      "place_name": "Cheerful Goat",
+      "place_address": "155 Waterloo St, #01-07, Stamford Arts Centre, Singapore 187962",
+      "maps_url": "https://maps.google.com/?q=Cheerful%20Goat%20155%20Waterloo%20St%2C%20%2301-07%2C%20Stamford%20Arts%20Centre%2C%20Singapore%20187962",
+      "saved_at": "2026-05-17T11:30:10.535226"
     }
   ]
 }
