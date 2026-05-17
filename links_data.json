@@ -155,6 +155,16 @@
       "place_address": "",
       "maps_url": "",
       "saved_at": "2026-05-17T09:14:25.080527"
+    },
+    {
+      "url": "https://www.instagram.com/p/DYO37qKlKp-/?igsh=d3FyMms2ZHVuYmdk",
+      "category": "Pet Friendly Restaurant",
+      "summary": "An Instagram review of a pet-friendly bistro at Pasir Ris park in Singapore, featuring grilled chicken skewers, pan-seared fish fillet, and other dishes enjoyed with dogs.",
+      "label": "Pet Friendly Bistro",
+      "place_name": "Bistro At The Park",
+      "place_address": "96 Pasir Ris Central, Singapore 519638",
+      "maps_url": "https://maps.google.com/?q=Bistro%20At%20The%20Park%2096%20Pasir%20Ris%20Central%2C%20Singapore%20519638",
+      "saved_at": "2026-05-17T09:25:14.672482"
     }
   ]
 }
