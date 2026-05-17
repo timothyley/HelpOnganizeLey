@@ -12,6 +12,20 @@ from datetime import datetime
 DATA_FILE = "links_data.json"
 
 def _load() -> dict:
+    # On cloud restarts the local file won't exist — pull from GitHub instead
+    if not os.path.exists(DATA_FILE):
+        token = os.environ.get("GITHUB_TOKEN", "")
+        repo  = os.environ.get("GITHUB_REPO", "")
+        if token and repo:
+            try:
+                api_url = f"https://api.github.com/repos/{repo}/contents/{DATA_FILE}"
+                r = requests.get(api_url, headers={"Authorization": f"token {token}"}, timeout=10)
+                if r.status_code == 200:
+                    content = base64.b64decode(r.json()["content"]).decode()
+                    with open(DATA_FILE, "w") as f:
+                        f.write(content)
+            except Exception:
+                pass
     if not os.path.exists(DATA_FILE):
         return {}
     with open(DATA_FILE, "r") as f:
