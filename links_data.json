@@ -135,6 +135,16 @@
       "place_address": "",
       "maps_url": "https://maps.google.com/?q=Maison%20Garden%20SG",
       "saved_at": "2026-05-17T08:17:47.304081"
+    },
+    {
+      "url": "https://www.instagram.com/p/DW_j4a0kRKu/?img_index=4&igsh=c3l0cDg4Zmc0aHF2",
+      "category": "Pet Friendly Restaurant",
+      "summary": "An Instagram review of Arbora at Mount Faber Peak, a pet-friendly hilltop restaurant in Singapore offering scenic views and a diverse menu with a 10% discount for diners with pets.",
+      "label": "Pet-Friendly Hilltop Dining",
+      "place_name": "Arbora @ Mount Faber Peak",
+      "place_address": "109 Mount Faber Rd, Mount Faber Peak, Singapore 099203",
+      "maps_url": "https://maps.google.com/?q=Arbora%20%40%20Mount%20Faber%20Peak%20109%20Mount%20Faber%20Rd%2C%20Mount%20Faber%20Peak%2C%20Singapore%20099203",
+      "saved_at": "2026-05-17T09:12:23.218287"
     }
   ]
 }
