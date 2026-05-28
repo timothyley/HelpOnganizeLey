@@ -195,6 +195,16 @@
       "place_address": "Singapore",
       "maps_url": "https://maps.google.com/?q=Singapore",
       "saved_at": "2026-05-28T15:54:49.651978"
+    },
+    {
+      "url": "https://vt.tiktok.com/ZSxbBoSYX/",
+      "category": "Cafe",
+      "summary": "A TikTok review of a new Korean cafe in Tanjong Pagar, Singapore, featuring drinks like Creme Br\u00fbl\u00e9e Milk Tea and Ube Latte.",
+      "label": "Korean Cafe Tanjong Pagar",
+      "place_name": "",
+      "place_address": "Tanjong Pagar, Singapore",
+      "maps_url": "https://maps.google.com/?q=Tanjong%20Pagar%2C%20Singapore",
+      "saved_at": "2026-05-28T15:55:09.954451"
     }
   ]
 }
